@@ -1,23 +1,34 @@
-import logo from './logo.svg';
 import './App.css';
+import React, { useEffect } from 'react';
+import GameCanvas from './GameCanvas';
 
 function App() {
+  useEffect(() => {
+    // Проверяем, что Telegram WebApp SDK доступен
+    if (window.Telegram) {
+      const webApp = window.Telegram.WebApp;
+
+      // Инициализация WebApp
+      webApp.ready(); // Сообщаем Telegram, что приложение готово
+      webApp.expand(); // Раскрываем приложение на весь экран
+
+      console.log('Telegram Web App initialized:', webApp);
+
+      // Выводим имя пользователя (если доступно)
+      if (webApp.initDataUnsafe && webApp.initDataUnsafe.user) {
+        const user = webApp.initDataUnsafe.user;
+        console.log(`Hello, ${user.first_name}!`);
+      }
+    } else {
+      console.error('Telegram WebApp SDK not loaded.');
+    }
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <main className="Game-area">
+        <GameCanvas />
+      </main>
     </div>
   );
 }

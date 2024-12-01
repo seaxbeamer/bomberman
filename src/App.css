@@ -1,38 +1,100 @@
+/* Общие стили для приложения */
 .App {
+  margin: 0;
+  padding: 0;
   text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+  height: 100vh; /* Полная высота экрана */
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: column; /* Разделение на области */
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  align-items: center;
+  background-color: #cce7ff; /* Фон приложения */
+}
+
+/* Заголовок приложения */
+.App-header {
+  font-family: 'Arial', sans-serif;
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+/* Игровая зона */
+.Game-area {
+  width: 800px; /* Фиксированная ширина игрового поля */
+  height: 600px; /* Фиксированная высота игрового поля */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 3px solid #333; /* Толще рамка для выделения */
+  background-color: #ffffff; /* Фон игровой зоны */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); /* Больше тени для эффекта */
+  position: relative; /* Для добавления статичных элементов */
+  overflow: hidden; /* Убираем прокрутку */
+}
+
+/* Кнопка для действия (например, сброса игры) */
+.Action-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 18px;
+  font-family: 'Arial', sans-serif;
+  background-color: #4caf50; /* Зеленый фон */
   color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+  transition: transform 0.2s ease; /* Анимация при нажатии */
 }
 
-.App-link {
-  color: #61dafb;
+.Action-button:hover {
+  background-color: #45a049; /* Темнее при наведении */
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.Action-button:active {
+  transform: scale(0.95); /* Небольшое уменьшение */
+}
+
+/* Убираем ненужные стили */
+body {
+  margin: 0;
+  overflow: hidden; /* Отключаем прокрутку */
+  font-family: 'Arial', sans-serif;
+}
+
+/* Стили для бонусов */
+.Bonus {
+  width: 25px; /* Размер бонуса */
+  height: 25px;
+  border-radius: 50%; /* Сделать круглым */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  position: absolute;
+}
+.Bonus-radius {
+  background-color: yellow; /* Цвет для бонуса радиуса */
+}
+.Bonus-bomb {
+  background-color: purple; /* Цвет для бонуса бомб */
+}
+
+/* Счётчик собранных бонусов */
+.Bonus-counter {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: rgba(0, 0, 0, 0.7); /* Полупрозрачный фон */
+  color: white; /* Белый текст */
+  padding: 10px; /* Внутренний отступ */
+  border-radius: 5px; /* Закруглённые углы */
+  font-size: 16px; /* Размер шрифта */
+  font-family: 'Arial', sans-serif; /* Шрифт */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4); /* Тень */
 }
