@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/seaxbeamer/bomberman.git/static/css/main.c8edd29b.css",
-    "main.js": "/seaxbeamer/bomberman.git/static/js/main.be2ca996.js",
-    "static/js/453.02b18aae.chunk.js": "/seaxbeamer/bomberman.git/static/js/453.02b18aae.chunk.js",
-    "index.html": "/seaxbeamer/bomberman.git/index.html",
-    "main.c8edd29b.css.map": "/seaxbeamer/bomberman.git/static/css/main.c8edd29b.css.map",
-    "main.be2ca996.js.map": "/seaxbeamer/bomberman.git/static/js/main.be2ca996.js.map",
-    "453.02b18aae.chunk.js.map": "/seaxbeamer/bomberman.git/static/js/453.02b18aae.chunk.js.map"
+    "main.css": "/bomberman/static/css/main.c8edd29b.css",
+    "main.js": "/bomberman/static/js/main.3e17d5d4.js",
+    "static/js/453.02b18aae.chunk.js": "/bomberman/static/js/453.02b18aae.chunk.js",
+    "index.html": "/bomberman/index.html",
+    "main.c8edd29b.css.map": "/bomberman/static/css/main.c8edd29b.css.map",
+    "main.3e17d5d4.js.map": "/bomberman/static/js/main.3e17d5d4.js.map",
+    "453.02b18aae.chunk.js.map": "/bomberman/static/js/453.02b18aae.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.c8edd29b.css",
-    "static/js/main.be2ca996.js"
+    "static/js/main.3e17d5d4.js"
   ]
 }
