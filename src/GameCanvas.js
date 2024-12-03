@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Stage, Layer, Rect, Circle } from 'react-konva';
+import { io } from 'socket.io-client';
+
 
 const GameCanvas = () => {
     // Размеры игрового поля
@@ -32,6 +34,49 @@ const GameCanvas = () => {
     const [explosionRadius, setExplosionRadius] = useState(3); // Базовый радиус
     const [maxBombs, setMaxBombs] = useState(1); // Базовое количество бомб
     const [activeBombs, setActiveBombs] = useState(0); // Активные бомбы
+    const [otherPlayers, setOtherPlayers] = useState([]);
+
+
+    const [otherPlayerPosition, setOtherPlayerPosition] = useState({ x: 0, y: 0 });
+
+    const [socket, setSocket] = useState(null);
+
+    useEffect(() => {
+        const newSocket = io('http://localhost:4000');
+        setSocket(newSocket);
+
+        // Обработка событий от сервера
+        newSocket.on('updatePlayers', (players) => {
+            setOtherPlayers(
+                players.filter((p) => p.id !== newSocket.id).map((p) => ({ id: p.id, ...p }))
+            );
+        });
+
+        newSocket.on('updatePlayer', (player) => {
+            setOtherPlayers((prev) =>
+                prev.map((p) => (p.id === player.id ? { ...p, position: player.position } : p))
+            );
+        });
+
+        newSocket.on('explosion', (data) => {
+            setFire((prev) => [...prev, data.position]);
+            setTimeout(() => {
+                setFire((prev) => prev.filter((f) => f.x !== data.position.x || f.y !== data.position.y));
+            }, 1000);
+        });
+
+        newSocket.on('playerHit', (data) => {
+            if (data.id === newSocket.id) {
+                setIsGameOver(true);
+            }
+        });
+
+        newSocket.on('updateObstacles', (updatedObstacles) => {
+            setObstacles(updatedObstacles);
+        });
+
+        return () => newSocket.close();
+    }, []);
 
     // Формы препятствий
     const obstacleShapes = {
@@ -232,6 +277,11 @@ const GameCanvas = () => {
         ) {
             setPosition({ x: newX, y: newY });
             checkBonusPickup(newX, newY);
+            if (socket) socket.emit('playerMove', { position: { x: newX, y: newY } });
+        }
+
+        if (e.key === ' ' && socket) {
+            socket.emit('placeBomb');
         }
     };
 
@@ -267,7 +317,7 @@ const GameCanvas = () => {
         const keyListener = (e) => handleKeyDown(e);
         window.addEventListener('keydown', keyListener);
         return () => window.removeEventListener('keydown', keyListener);
-    }, [position, isGameOver]);
+    }, [position, isGameOver, obstacles]);
 
     useEffect(() => {
         checkGameOver();
@@ -347,7 +397,23 @@ const GameCanvas = () => {
                         />
                     ))}
 
-                    <Circle x={position.x + CELL_SIZE / 2} y={position.y + CELL_SIZE / 2} radius={20} fill="blue" />
+                    <Circle
+                        x={position.x + CELL_SIZE / 2}
+                        y={position.y + CELL_SIZE / 2}
+                        radius={20}
+                        fill="blue"
+                    />
+
+                    {/* Отображение других игроков */}
+                    {otherPlayers.map((player) => (
+                        <Circle
+                            key={player.id}
+                            x={player.position.x + CELL_SIZE / 2}
+                            y={player.position.y + CELL_SIZE / 2}
+                            radius={20}
+                            fill="red"
+                        />
+                    ))}
                 </Layer>
             </Stage>
 
