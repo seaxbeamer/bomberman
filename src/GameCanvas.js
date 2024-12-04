@@ -40,22 +40,29 @@ const GameCanvas = () => {
     const [otherPlayerPosition, setOtherPlayerPosition] = useState({ x: 0, y: 0 });
 
     const [socket, setSocket] = useState(null);
+    const [roomId] = useState('room1');
 
     useEffect(() => {
         const newSocket = io('http://localhost:3000');
         setSocket(newSocket);
+        newSocket.emit('joinGame', roomId); // Подключаемся к комнате
 
         // Обработка событий от сервера
-        newSocket.on('updatePlayers', (players) => {
-            setOtherPlayers(
-                players.filter((p) => p.id !== newSocket.id).map((p) => ({ id: p.id, ...p }))
-            );
+        
+        // Обновление состояния игроков
+        newSocket.on('updatePlayers', (updatedPlayers) => {
+            setPlayers(updatedPlayers.reduce((acc, id) => {
+                if (!acc[id]) acc[id] = { x: 50, y: 50 }; // Задаем начальные координаты
+                return acc;
+            }, {}));
         });
 
-        newSocket.on('updatePlayer', (player) => {
-            setOtherPlayers((prev) =>
-                prev.map((p) => (p.id === player.id ? { ...p, position: player.position } : p))
-            );
+        // Обработка перемещения других игроков
+        newSocket.on('playerMoved', ({ id, position }) => {
+            setPlayers((prevPlayers) => ({
+                ...prevPlayers,
+                [id]: position,
+            }));
         });
 
         newSocket.on('explosion', (data) => {
@@ -76,7 +83,7 @@ const GameCanvas = () => {
         });
 
         return () => newSocket.close();
-    }, []);
+    }, [roomId]);
 
     // Формы препятствий
     const obstacleShapes = {
