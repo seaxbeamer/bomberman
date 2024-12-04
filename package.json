@@ -43,6 +43,10 @@
       "last 1 safari version"
     ]
   },
+  "engines": {
+  "node": "18.x",
+  "npm": "8.x"
+  },
   "devDependencies": {
     "gh-pages": "^6.2.0"
   }
