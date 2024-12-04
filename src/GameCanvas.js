@@ -44,6 +44,52 @@ const GameCanvas = () => {
     const [roomId, setRoomId] = useState('');
     const [joined, setJoined] = useState(false); // Отслеживает подключение к комнате
 
+    const rooms = {}; // roomId -> { players: Set(socket.id), obstacles: [] }
+
+    io.on('connection', (socket) => {
+        console.log(`Player connected: ${socket.id}`);
+    
+        socket.on('joinRoom', (roomId) => {
+            if (!rooms[roomId]) {
+                rooms[roomId] = { players: new Set(), obstacles: [] };
+            }
+    
+            rooms[roomId].players.add(socket.id);
+            socket.join(roomId);
+    
+            console.log(`Player ${socket.id} joined room ${roomId}`);
+    
+            // Отправляем всем игрокам в комнате информацию об игроках
+            io.to(roomId).emit('updatePlayers', Array.from(rooms[roomId].players));
+        });
+    
+        socket.on('playerMove', (data) => {
+            const roomId = data.roomId;
+            if (rooms[roomId]) {
+                socket.to(roomId).emit('playerMoved', { id: socket.id, position: data.position });
+            }
+        });
+    
+        socket.on('disconnect', () => {
+            for (const roomId in rooms) {
+                if (rooms[roomId].players.has(socket.id)) {
+                    rooms[roomId].players.delete(socket.id);
+                    if (rooms[roomId].players.size === 0) {
+                        delete rooms[roomId];
+                    } else {
+                        io.to(roomId).emit('updatePlayers', Array.from(rooms[roomId].players));
+                    }
+                    break;
+                }
+            }
+            console.log(`Player disconnected: ${socket.id}`);
+        });
+    });
+    
+    server.listen(3000, () => {
+        console.log('Server is running on port 3000');
+    });
+
     useEffect(() => {
         const newSocket = io('http://localhost:3000');
         setSocket(newSocket);
@@ -68,6 +114,17 @@ const GameCanvas = () => {
             setJoined(true);
         }
     };
+    
+    useEffect(() => {
+        socket.on('playerMoved', ({ id, position }) => {
+            setPlayers((prev) => ({
+                ...prev,
+                [id]: position,
+            }));
+        });
+    
+        return () => socket.off('playerMoved');
+    }, [socket]);
 
     const generateObstacles = () => {
         const newObstacles = [];
